@@ -9,7 +9,7 @@ import java.util.Optional;
 @Component
 public class UsuarioMapper {
     public Usuario convertirDesde(UsuarioDto dto) {
-        return Optional.of(dto)
+        return Optional.ofNullable(dto)
                 .map(usuarioDto -> Usuario.builder()
                         .nombres(usuarioDto.nombres())
                         .apellidos(usuarioDto.apellidos())
@@ -24,7 +24,7 @@ public class UsuarioMapper {
     }
 
     public UsuarioDto convertirA(Usuario model) {
-        return Optional.of(model)
+        return Optional.ofNullable(model)
                 .map(usuario -> new UsuarioDto(
                         usuario.getNombres(),
                         usuario.getApellidos(),

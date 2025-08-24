@@ -12,8 +12,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CrearUsuarioUseCase {
     private final UsuarioGateway usuarioGateway;
-    private static final String CORREO_ELECTRONICO_EXISTE = "El correo electrónico proporcionado ya está en uso";
-    private static final String DOCUMENTO_EXISTE = "El documento de identificación proporcionado ya está en uso";
+    public static final String CORREO_ELECTRONICO_EXISTE = "El correo electrónico proporcionado ya está en uso";
+    public static final String DOCUMENTO_EXISTE = "El documento de identificación proporcionado ya está en uso";
 
     public Mono<Usuario> ejecutar(Usuario usuario) {
         Mono<Boolean> existeCorreo = usuarioGateway.existePorCorreoElectronico(usuario.getCorreoElectronico());

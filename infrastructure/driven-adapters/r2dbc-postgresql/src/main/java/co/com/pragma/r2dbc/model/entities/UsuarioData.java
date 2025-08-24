@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(schema= "public", name = "usuario")
-public class UsuarioEntity {
+public class UsuarioData {
     @Id
     @Column("id")
     private Long id;
