@@ -5,6 +5,7 @@ import co.com.pragma.api.mapper.UsuarioMapper;
 import co.com.pragma.api.validador.ValidacionManejador;
 import co.com.pragma.usecase.crearusuario.CrearUsuarioUseCase;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -19,11 +20,11 @@ public class Handler {
     private final UsuarioMapper usuarioMapper;
 
     public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(UsuarioDto.class) //json -> dto  ->> MOno<UsuarioDto>
+        return serverRequest.bodyToMono(UsuarioDto.class)
                 .flatMap(validacionManejador::validar)
                 .map(usuarioMapper::convertirDesde)
                 .flatMap(crearUsuarioUseCase::ejecutar)
                 .map(usuarioMapper::convertirA)
-                .flatMap(dto -> ServerResponse.ok().bodyValue(dto));
+                .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED).bodyValue(dto));
     }
 }
