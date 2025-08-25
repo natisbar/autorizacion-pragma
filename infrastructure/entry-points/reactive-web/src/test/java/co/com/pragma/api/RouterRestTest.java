@@ -1,13 +1,11 @@
 package co.com.pragma.api;
 
-import co.com.pragma.api.dto.UsuarioDto;
 import co.com.pragma.api.exception.ManejadorGlobalErrores;
 import co.com.pragma.api.mapper.UsuarioMapper;
 import co.com.pragma.api.validador.ValidacionManejador;
 import co.com.pragma.model.usuario.Usuario;
 import co.com.pragma.usecase.crearusuario.CrearUsuarioUseCase;
 import jakarta.validation.Validator;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;

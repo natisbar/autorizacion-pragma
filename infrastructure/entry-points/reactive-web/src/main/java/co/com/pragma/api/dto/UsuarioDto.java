@@ -8,24 +8,21 @@ import java.time.LocalDate;
 import static co.com.pragma.api.common.Constantes.PATRON_CORREO;
 
 public record UsuarioDto(
-        @NotNull(message = "Los nombres no pueden ser nulos")
-        @NotBlank(message = "Los nombres no pueden ser vacios")
+        @NotBlank(message = "Los nombres son obligatorios y no pueden estar vacios")
         String nombres,
-        @NotNull(message = "Los apellidos no pueden ser nulos")
-        @NotBlank(message = "Los apellidos no pueden ser vacios")
+        @NotBlank(message = "Los apellidos son obligatorios y no pueden estar vacios")
         String apellidos,
         LocalDate fechaNacimiento,
-        @NotNull(message = "La identificación no puede ser nula")
-        @NotBlank(message = "La identificación no puede estar vacia")
+        @NotBlank(message = "La identificacion es obligatoria y no puede estar vacia")
         String identificacion,
         String direccion,
         String telefono,
-        @NotNull(message = "El correoElectronico no puede ser nulo")
-        @Pattern(regexp = PATRON_CORREO, message = "El formato del correoElectronico no es correcto")
+        @NotBlank(message = "El correo electronico es obligatorio y no puede estar vacio")
+        @Pattern(regexp = PATRON_CORREO, message = "El formato del correo electronico no es correcto")
         String correoElectronico,
         @NotNull
-        @DecimalMin(value = "0.00", message = "El salarioBase debe ser mayor o igual a 0")
-        @DecimalMax(value = "15000000.00", message = "El salarioBase debe ser menor o igual a 15000000")
+        @DecimalMin(value = "0.00", message = "El salario base debe ser mayor o igual a 0")
+        @DecimalMax(value = "15000000.00", message = "El salario base debe ser menor o igual a 15000000")
         BigDecimal salarioBase
 ) {
 }
