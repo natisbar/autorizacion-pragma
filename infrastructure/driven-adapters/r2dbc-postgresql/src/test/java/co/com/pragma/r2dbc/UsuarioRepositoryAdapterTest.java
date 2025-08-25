@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.data.domain.Example;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -28,6 +29,9 @@ class UsuarioRepositoryAdapterTest {
     UsuarioRepository repository;
 
     @Mock
+    TransactionalOperator transactionalOperator;
+
+    @Mock
     ObjectMapper mapper;
 
     @Test
@@ -38,6 +42,8 @@ class UsuarioRepositoryAdapterTest {
         when(repository.save(any(UsuarioData.class))).thenReturn(Mono.just(entity));
         when(mapper.map(any(UsuarioData.class), eq(Usuario.class))).thenReturn(usuario);
         when(mapper.map(any(Usuario.class), eq(UsuarioData.class))).thenReturn(entity);
+        when(transactionalOperator.transactional(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
 
         Mono<Usuario> result = repositoryAdapter.guardar(usuario);
 
