@@ -1,5 +1,6 @@
 package co.com.pragma.api;
 
+import co.com.pragma.api.config.SecurityHeadersConfig;
 import co.com.pragma.api.exception.ManejadorGlobalErrores;
 import co.com.pragma.api.mapper.UsuarioMapper;
 import co.com.pragma.api.validador.ValidacionManejador;
@@ -22,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {RouterRest.class, Handler.class, ValidacionManejador.class, Validator.class,
-        CrearUsuarioUseCase.class, UsuarioMapper.class, ManejadorGlobalErrores.class})
+        CrearUsuarioUseCase.class, UsuarioMapper.class, ManejadorGlobalErrores.class, SecurityHeadersConfig.class})
 @WebFluxTest
 class RouterRestTest {
 
@@ -43,7 +44,7 @@ class RouterRestTest {
                 "direccion": null,
                 "telefono": null,
                 "correoElectronico": "correo@correo.com",
-                "salarioBase": 20000000
+                "salarioBase": -1
                 }""";
 
         webTestClient.post()
@@ -59,7 +60,7 @@ class RouterRestTest {
                     System.out.println("Respuesta: " + response);
                 })
                 .jsonPath("$.estado").isEqualTo(400)
-                .jsonPath("$.mensaje").isEqualTo("salarioBase: El salarioBase debe ser menor o igual a 15000000");
+                .jsonPath("$.mensaje").isEqualTo("salarioBase: El salario base debe ser un valor numerico entre 0 y 15000000");
     }
 
     @Test
@@ -85,6 +86,14 @@ class RouterRestTest {
                 .bodyValue(usuarioJson)
                 .exchange()
                 .expectStatus().is5xxServerError()
+                .expectHeader().valueEquals("Content-Security-Policy",
+                        "default-src 'self'; frame-ancestors 'self'; form-action 'self'")
+                .expectHeader().valueEquals("Strict-Transport-Security", "max-age=31536000;")
+                .expectHeader().valueEquals("X-Content-Type-Options", "nosniff")
+                .expectHeader().valueEquals("Server", "")
+                .expectHeader().valueEquals("Cache-Control", "no-store")
+                .expectHeader().valueEquals("Pragma", "no-cache")
+                .expectHeader().valueEquals("Referrer-Policy", "strict-origin-when-cross-origin")
                 .expectBody()
                 .consumeWith(result -> {
                     String response = new String(result.getResponseBody(), StandardCharsets.UTF_8);

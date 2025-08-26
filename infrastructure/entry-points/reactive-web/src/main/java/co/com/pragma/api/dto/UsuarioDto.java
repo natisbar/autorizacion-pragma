@@ -1,28 +1,47 @@
 package co.com.pragma.api.dto;
 
-import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-import static co.com.pragma.api.common.Constantes.PATRON_CORREO;
+import static co.com.pragma.api.common.Constantes.*;
 
 public record UsuarioDto(
+        @Schema(example = "Laura Andrea")
         @NotBlank(message = "Los nombres son obligatorios y no pueden estar vacios")
+        @Pattern(regexp = PATRON_ALFANUMERICO_ESPACIO, message = "Los nombres solo pueden contener letras, números y espacios")
         String nombres,
+
+        @Schema(example = "Moreno Velasquez")
         @NotBlank(message = "Los apellidos son obligatorios y no pueden estar vacios")
+        @Pattern(regexp = PATRON_ALFANUMERICO_ESPACIO, message = "Los nombres solo pueden contener letras, números y espacios")
         String apellidos,
-        LocalDate fechaNacimiento,
+
+        @Schema(example = "1992-05-07")
+        @Pattern(regexp = PATRON_FECHA, message = "Fecha invalida. Debe estar en formato yyyy-MM-dd")
+        String fechaNacimiento,
+
+        @Schema(example = "1122334456")
         @NotBlank(message = "La identificacion es obligatoria y no puede estar vacia")
+        @Pattern(regexp = PATRON_ALFANUMERICO, message = "La identificación solo puede contener letras y números")
         String identificacion,
+
+        @Schema(example = "Cll 5sur # 24 - 68")
+        @Pattern(regexp = PATRON_DIRECCION, message = "La dirección solo puede contener letras, números, espacio y los simbolos numeral (#) y guion (-)")
         String direccion,
+
+        @Schema(example = "3145556262")
+        @Pattern(regexp = PATRON_TELEFONO, message = "El teléfono solo puede contener valores numericos y no puede tener mas de 10 digitos")
         String telefono,
+
+        @Schema(example = "laura.velasquez@gmail.com")
         @NotBlank(message = "El correo electronico es obligatorio y no puede estar vacio")
         @Pattern(regexp = PATRON_CORREO, message = "El formato del correo electronico no es correcto")
         String correoElectronico,
-        @NotNull
-        @DecimalMin(value = "0.00", message = "El salario base debe ser mayor o igual a 0")
-        @DecimalMax(value = "15000000.00", message = "El salario base debe ser menor o igual a 15000000")
-        BigDecimal salarioBase
+
+        @Schema(example = "3500000")
+        @NotBlank(message = "El salario base es obligatorio y no puede estar vacio")
+        @Pattern(regexp = PATRON_SALARIO, message = "El salario base debe ser un valor numerico entre 0 y 15000000")
+        String salarioBase
 ) {
 }

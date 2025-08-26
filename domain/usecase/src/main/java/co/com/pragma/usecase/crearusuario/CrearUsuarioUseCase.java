@@ -1,7 +1,7 @@
 package co.com.pragma.usecase.crearusuario;
 
 import co.com.pragma.model.usuario.Usuario;
-import co.com.pragma.model.usuario.common.ex.NegocioException;
+import co.com.pragma.model.usuario.common.ex.ConflictoException;
 import co.com.pragma.model.usuario.gateways.UsuarioGateway;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -25,7 +25,7 @@ public class CrearUsuarioUseCase {
                     List<String> listaErrores = new ArrayList<>();
                     if (correoExiste) listaErrores.add(CORREO_ELECTRONICO_EXISTE);
                     if (documentoExiste) listaErrores.add(DOCUMENTO_EXISTE);
-                    if (!listaErrores.isEmpty()) return Mono.error(new NegocioException(String.join(", ", listaErrores)));
+                    if (!listaErrores.isEmpty()) return Mono.error(new ConflictoException(String.join(", ", listaErrores)));
                     return usuarioGateway.guardar(usuario);
                 });
     }

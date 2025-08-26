@@ -4,6 +4,8 @@ import co.com.pragma.api.dto.UsuarioDto;
 import co.com.pragma.model.usuario.Usuario;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class UsuarioMapperTest {
@@ -19,7 +21,8 @@ class UsuarioMapperTest {
 
     @Test
     void construirUsuarioDto_cuandoUsuarioExiste_debeRetornarUsuarioDto(){
-        Usuario usuario = Usuario.builder().nombres("natalia").identificacion("112233").build();
+        Usuario usuario = Usuario.builder().nombres("natalia").identificacion("112233")
+                .salarioBase(BigDecimal.TEN).build();
         UsuarioDto usuarioDto = usuarioMapper.convertirA(usuario);
 
         assertThat(usuarioDto.nombres()).isEqualTo(usuario.getNombres());
@@ -29,7 +32,7 @@ class UsuarioMapperTest {
     @Test
     void construirUsuario_cuandoUsuarioDtoExiste_debeRetornarUsuario(){
         UsuarioDto usuarioDto = new UsuarioDto("natalia", null, null, "112233",
-                null, null, null, null);
+                null, null, null, "4000000");
         Usuario usuario = usuarioMapper.convertirDesde(usuarioDto);
 
         assertThat(usuario.getNombres()).isEqualTo(usuarioDto.nombres());

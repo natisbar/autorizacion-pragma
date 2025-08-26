@@ -4,6 +4,7 @@ import co.com.pragma.api.dto.UsuarioDto;
 import co.com.pragma.api.exception.Error;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,6 +25,9 @@ public class RouterRest {
             operation = @Operation(
                     operationId = "crearUsuario",
                     summary = "Crear un nuevo usuario",
+                    description = "Este endpoint permite registrar un usuario en el sistema. "
+                            + "Requiere que la identificación y el correo electrónico sean únicos. "
+                            + "El salario base debe estar en el rango de 0 a 15'000.000.",
                     tags = {"Usuario"},
                     requestBody = @RequestBody(
                             required = true,
@@ -38,7 +42,21 @@ public class RouterRest {
                                     description = "Usuario creado exitosamente",
                                     content = @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = UsuarioDto.class)
+                                            schema = @Schema(implementation = UsuarioDto.class),
+                                            examples = {
+                                                    @ExampleObject(
+                                                            name = "Usuario creado",
+                                                            value = "{ \"nombres\": \"Laura\", " +
+                                                                    "\"apellidos\": \"Martinez\", " +
+                                                                    "\"fechaNacimiento\": \"1990-05-04\", " +
+                                                                    "\"identificacion\": \"10072884\", " +
+                                                                    "\"direccion\": \"cll 6 sur\", " +
+                                                                    "\"telefono\": \"1111111111\", " +
+                                                                    "\"correoElectronico\": \"laura.martinez3@gmail.com\", " +
+                                                                    "\"salarioBase\": \"2000000\" }"
+                                                    )
+                                            }
+
                                     )
                             ),
                             @ApiResponse(
@@ -46,7 +64,29 @@ public class RouterRest {
                                     description = "Datos inválidos en la solicitud",
                                     content = @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = Error.class)
+                                            schema = @Schema(implementation = Error.class),
+                                            examples = {
+                                                    @ExampleObject(
+                                                            name = "Datos inválidos",
+                                                            value = "{ \"codigo\": \"400\", \"mensaje\": \"Los nombres son obligatorios y no pueden estar vacios, " +
+                                                                    "El teléfono solo puede contener valores numericos y no puede tener mas de 10 digitos\" }"
+                                                    )
+                                            }
+
+                                    )
+                            ),
+                            @ApiResponse(
+                                    responseCode = "409",
+                                    description = "Conflicto: el correo o la identificación ya están registrados",
+                                    content = @Content(
+                                            mediaType = "application/json",
+                                            schema = @Schema(implementation = Error.class),
+                                            examples = {
+                                                    @ExampleObject(
+                                                            name = "Usuario ya existe",
+                                                            value = "{ \"codigo\": \"409\", \"mensaje\": \"El correo electrónico proporcionado ya está en uso\" }"
+                                                    )
+                                            }
                                     )
                             )
                     }
