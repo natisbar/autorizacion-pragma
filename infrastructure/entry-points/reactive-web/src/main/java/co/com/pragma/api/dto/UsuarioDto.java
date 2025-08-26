@@ -6,6 +6,10 @@ import jakarta.validation.constraints.Pattern;
 
 import static co.com.pragma.api.common.Constantes.*;
 
+@Schema(
+        name = "UsuarioDto",
+        requiredProperties = {"nombres", "apellidos", "identificacion", "correoElectronico", "salarioBase"}
+)
 public record UsuarioDto(
         @Schema(example = "Laura Andrea")
         @NotBlank(message = "Los nombres son obligatorios y no pueden estar vacios")
