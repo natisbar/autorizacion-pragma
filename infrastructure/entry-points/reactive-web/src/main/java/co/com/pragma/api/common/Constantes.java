@@ -8,4 +8,7 @@ public class Constantes {
     public static final String PATRON_ALFANUMERICO_ESPACIO = "^[a-zA-Z0-9 ]+$";
     public static final String PATRON_TELEFONO = "^[0-9]{1,10}$";
     public static final String PATRON_DIRECCION = "^[A-Za-z0-9#\\- ]+$";
+    public static final String PATRON_ENTERO_POSITIVO = "^[1-9]\\d*$";
+    public static final String PATRON_CONTRASENA = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$";
+
 }

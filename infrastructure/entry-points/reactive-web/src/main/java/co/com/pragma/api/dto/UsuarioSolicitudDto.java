@@ -10,7 +10,7 @@ import static co.com.pragma.api.common.Constantes.*;
         name = "UsuarioDto",
         requiredProperties = {"nombres", "apellidos", "identificacion", "correoElectronico", "salarioBase"}
 )
-public record UsuarioDto(
+public record UsuarioSolicitudDto(
         @Schema(example = "Laura Andrea")
         @NotBlank(message = "Los nombres son obligatorios y no pueden estar vacios")
         @Pattern(regexp = PATRON_ALFANUMERICO_ESPACIO, message = "Los nombres solo pueden contener letras, números y espacios")
@@ -46,6 +46,17 @@ public record UsuarioDto(
         @Schema(example = "3500000")
         @NotBlank(message = "El salario base es obligatorio y no puede estar vacio")
         @Pattern(regexp = PATRON_SALARIO, message = "El salario base debe ser un valor numerico entre 0 y 15000000")
-        String salarioBase
+        String salarioBase,
+
+        @Schema(example = "1")
+        @NotBlank(message = "El rol es obligatorio y no puede estar vacio")
+        @Pattern(regexp = PATRON_ALFANUMERICO, message = "El nombre rol solo puede contener letras y números")
+        String nombreRol,
+
+        @Schema(example = "Password1$")
+        @NotBlank(message = "La contraseña es obligatorio y no puede estar vacia")
+        @Pattern(regexp = PATRON_CONTRASENA, message = "La contraseña debe contener al menos un dígito, una minuscula, " +
+                "una mayuscula, un caracter especial (@$!%*?&) y una longitud mínima 8 y máxima 20 caracteres")
+        String contrasena
 ) {
 }

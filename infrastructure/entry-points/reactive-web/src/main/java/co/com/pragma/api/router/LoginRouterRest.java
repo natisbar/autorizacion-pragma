@@ -1,7 +1,8 @@
-package co.com.pragma.api;
+package co.com.pragma.api.router;
 
-import co.com.pragma.api.dto.UsuarioDto;
+import co.com.pragma.api.dto.UsuarioSolicitudDto;
 import co.com.pragma.api.exception.Error;
+import co.com.pragma.api.handler.LoginHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -18,7 +19,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class RouterRest {
+public class LoginRouterRest {
 
     @Bean
     @RouterOperation(
@@ -33,7 +34,7 @@ public class RouterRest {
                             required = true,
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = UsuarioDto.class)
+                                    schema = @Schema(implementation = UsuarioSolicitudDto.class)
                             )
                     ),
                     responses = {
@@ -42,7 +43,7 @@ public class RouterRest {
                                     description = "Usuario creado exitosamente",
                                     content = @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = UsuarioDto.class),
+                                            schema = @Schema(implementation = UsuarioSolicitudDto.class),
                                             examples = {
                                                     @ExampleObject(
                                                             name = "Usuario creado",
@@ -92,7 +93,7 @@ public class RouterRest {
                     }
             )
     )
-    public RouterFunction<ServerResponse> routerFunction(Handler handler) {
-        return route(POST("/v1/usuarios"), handler::listenPOSTUseCase);
+    public RouterFunction<ServerResponse> routerFunction(LoginHandler loginHandler) {
+        return route(POST("/v1/login"), loginHandler::listenPOSTUseCase);
     }
 }

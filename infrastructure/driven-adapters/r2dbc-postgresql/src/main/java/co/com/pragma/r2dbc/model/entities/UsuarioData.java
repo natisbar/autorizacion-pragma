@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -34,4 +35,8 @@ public class UsuarioData {
     private String correoElectronico;
     @Column("salario_base")
     private BigDecimal salarioBase;
+    @Column("id_rol")
+    private UUID idRol;
+    @Column("contrasena")
+    private String contrasena;
 }

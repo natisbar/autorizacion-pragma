@@ -1,7 +1,10 @@
 package co.com.pragma.api.mapper;
 
-import co.com.pragma.api.dto.UsuarioDto;
+import co.com.pragma.api.dto.UsuarioRespuestaDto;
+import co.com.pragma.api.dto.UsuarioSolicitudDto;
+import co.com.pragma.api.seguridad.PasswordService;
 import co.com.pragma.model.usuario.Usuario;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -10,8 +13,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 public class UsuarioMapper {
-    public Usuario convertirDesde(UsuarioDto dto) {
+    private final PasswordService passwordService;
+
+    public Usuario convertirDesde(UsuarioSolicitudDto dto) {
         return Optional.ofNullable(dto)
                 .map(usuarioDto -> Usuario.builder()
                         .nombres(usuarioDto.nombres())
@@ -23,13 +29,15 @@ public class UsuarioMapper {
                         .telefono(usuarioDto.telefono())
                         .correoElectronico(usuarioDto.correoElectronico())
                         .salarioBase(new BigDecimal(usuarioDto.salarioBase()))
+                        .nombreRol(dto.nombreRol())
+                        .contrasena(passwordService.hash(usuarioDto.contrasena()))
                         .build())
                 .orElse(null);
     }
 
-    public UsuarioDto convertirA(Usuario model) {
+    public UsuarioRespuestaDto convertirA(Usuario model) {
         return Optional.ofNullable(model)
-                .map(usuario -> new UsuarioDto(
+                .map(usuario -> new UsuarioRespuestaDto(
                         usuario.getNombres(),
                         usuario.getApellidos(),
                         usuario.getFechaNacimiento() != null ?
@@ -38,7 +46,8 @@ public class UsuarioMapper {
                         usuario.getDireccion(),
                         usuario.getTelefono(),
                         usuario.getCorreoElectronico(),
-                        usuario.getSalarioBase().toString()))
+                        usuario.getSalarioBase().toString(),
+                        usuario.getNombreRol() != null ? usuario.getNombreRol().toUpperCase() : null))
                 .orElse(null);
     }
 }

@@ -1,8 +1,10 @@
 package co.com.pragma.api;
 
-import co.com.pragma.api.config.SecurityHeadersConfig;
+import co.com.pragma.api.seguridad.config.SecurityHeadersConfig;
 import co.com.pragma.api.exception.ManejadorGlobalErrores;
+import co.com.pragma.api.handler.UsuarioHandler;
 import co.com.pragma.api.mapper.UsuarioMapper;
+import co.com.pragma.api.router.UsuarioRouterRest;
 import co.com.pragma.api.validador.ValidacionManejador;
 import co.com.pragma.model.usuario.Usuario;
 import co.com.pragma.usecase.crearusuario.CrearUsuarioUseCase;
@@ -22,10 +24,10 @@ import java.nio.charset.StandardCharsets;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class, ValidacionManejador.class, Validator.class,
+@ContextConfiguration(classes = {UsuarioRouterRest.class, UsuarioHandler.class, ValidacionManejador.class, Validator.class,
         CrearUsuarioUseCase.class, UsuarioMapper.class, ManejadorGlobalErrores.class, SecurityHeadersConfig.class})
 @WebFluxTest
-class RouterRestTest {
+class UsuarioRouterRestTest {
 
     @Autowired
     private WebTestClient webTestClient;

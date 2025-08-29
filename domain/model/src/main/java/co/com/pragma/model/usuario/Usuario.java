@@ -22,5 +22,8 @@ public class Usuario {
     private String direccion;
     private String telefono;
     private String correoElectronico;
+    private String idRol;
+    private String nombreRol;
     private BigDecimal salarioBase;
+    private String contrasena;
 }

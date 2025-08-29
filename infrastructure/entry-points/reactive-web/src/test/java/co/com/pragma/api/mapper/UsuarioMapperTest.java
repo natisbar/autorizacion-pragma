@@ -1,6 +1,6 @@
 package co.com.pragma.api.mapper;
 
-import co.com.pragma.api.dto.UsuarioDto;
+import co.com.pragma.api.dto.UsuarioSolicitudDto;
 import co.com.pragma.model.usuario.Usuario;
 import org.junit.jupiter.api.Test;
 
@@ -14,29 +14,29 @@ class UsuarioMapperTest {
 
     @Test
     void construirUsuarioDto_cuandoUsuarioEsNulo_debeRetornarNull(){
-        UsuarioDto usuarioDto = usuarioMapper.convertirA(null);
+        UsuarioSolicitudDto usuarioSolicitudDto = usuarioMapper.convertirA(null);
 
-        assertThat(usuarioDto).isNull();
+        assertThat(usuarioSolicitudDto).isNull();
     }
 
     @Test
     void construirUsuarioDto_cuandoUsuarioExiste_debeRetornarUsuarioDto(){
         Usuario usuario = Usuario.builder().nombres("natalia").identificacion("112233")
                 .salarioBase(BigDecimal.TEN).build();
-        UsuarioDto usuarioDto = usuarioMapper.convertirA(usuario);
+        UsuarioSolicitudDto usuarioSolicitudDto = usuarioMapper.convertirA(usuario);
 
-        assertThat(usuarioDto.nombres()).isEqualTo(usuario.getNombres());
-        assertThat(usuarioDto.identificacion()).isEqualTo(usuario.getIdentificacion());
+        assertThat(usuarioSolicitudDto.nombres()).isEqualTo(usuario.getNombres());
+        assertThat(usuarioSolicitudDto.identificacion()).isEqualTo(usuario.getIdentificacion());
     }
 
     @Test
     void construirUsuario_cuandoUsuarioDtoExiste_debeRetornarUsuario(){
-        UsuarioDto usuarioDto = new UsuarioDto("natalia", null, null, "112233",
+        UsuarioSolicitudDto usuarioSolicitudDto = new UsuarioSolicitudDto("natalia", null, null, "112233",
                 null, null, null, "4000000");
-        Usuario usuario = usuarioMapper.convertirDesde(usuarioDto);
+        Usuario usuario = usuarioMapper.convertirDesde(usuarioSolicitudDto);
 
-        assertThat(usuario.getNombres()).isEqualTo(usuarioDto.nombres());
-        assertThat(usuario.getIdentificacion()).isEqualTo(usuarioDto.identificacion());
+        assertThat(usuario.getNombres()).isEqualTo(usuarioSolicitudDto.nombres());
+        assertThat(usuario.getIdentificacion()).isEqualTo(usuarioSolicitudDto.identificacion());
     }
 
     @Test
