@@ -13,8 +13,7 @@ import reactor.test.StepVerifier;
 
 import java.util.List;
 
-import static co.com.pragma.usecase.crearusuario.CrearUsuarioUseCase.CORREO_ELECTRONICO_EXISTE;
-import static co.com.pragma.usecase.crearusuario.CrearUsuarioUseCase.DOCUMENTO_EXISTE;
+import static co.com.pragma.usecase.crearusuario.CrearUsuarioUseCase.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,10 +27,12 @@ class CrearUsuarioUseCaseTest {
 
     @Test
     void debeCrearElUsuario() {
-        Usuario usuario = Usuario.builder().correoElectronico("correo@correo.com").identificacion("112233").build();
+        Usuario usuario = Usuario.builder().correoElectronico("correo@correo.com").identificacion("112233")
+                .nombreRol("ASESOR").build();
 
         when(usuarioGateway.existePorIdentificacion(usuario.getIdentificacion())).thenReturn(Mono.just(false));
         when(usuarioGateway.existePorCorreoElectronico(usuario.getCorreoElectronico())).thenReturn(Mono.just(false));
+        when(usuarioGateway.obtenerIdRolPorNombreRol(usuario.getNombreRol())).thenReturn(Mono.just("aaa111aaaaa"));
         when(usuarioGateway.guardar(any(Usuario.class))).thenReturn(Mono.just(usuario.toBuilder().id(1L).build()));
 
         Mono<Usuario> result = crearUsuarioUseCase.ejecutar(usuario);
@@ -43,11 +44,13 @@ class CrearUsuarioUseCaseTest {
 
     @Test
     void debeGenerarExcepcion() {
-        Usuario usuario = Usuario.builder().correoElectronico("correo@correo.com").identificacion("112233").build();
+        Usuario usuario = Usuario.builder().correoElectronico("correo@correo.com").identificacion("112233")
+                .nombreRol("ASESOR").build();
         List<String> listaErrores = List.of(CORREO_ELECTRONICO_EXISTE, DOCUMENTO_EXISTE);
 
         when(usuarioGateway.existePorIdentificacion(usuario.getIdentificacion())).thenReturn(Mono.just(true));
         when(usuarioGateway.existePorCorreoElectronico(usuario.getCorreoElectronico())).thenReturn(Mono.just(true));
+        when(usuarioGateway.obtenerIdRolPorNombreRol(usuario.getNombreRol())).thenReturn(Mono.just("aaa111aaaaa"));
 
         Mono<Usuario> result = crearUsuarioUseCase.ejecutar(usuario);
 
@@ -55,6 +58,25 @@ class CrearUsuarioUseCaseTest {
                 .expectErrorMatches(throwable ->
                         throwable instanceof NegocioException &&
                                 throwable.getMessage().equals(String.join(", ", listaErrores))
+                )
+                .verify();
+    }
+
+    @Test
+    void debeGenerarExcepcionPorRol() {
+        Usuario usuario = Usuario.builder().correoElectronico("correo@correo.com").identificacion("112233")
+                .nombreRol("ASESOR").build();
+
+        when(usuarioGateway.existePorIdentificacion(usuario.getIdentificacion())).thenReturn(Mono.just(true));
+        when(usuarioGateway.existePorCorreoElectronico(usuario.getCorreoElectronico())).thenReturn(Mono.just(true));
+        when(usuarioGateway.obtenerIdRolPorNombreRol(usuario.getNombreRol())).thenReturn(Mono.just(""));
+
+        Mono<Usuario> result = crearUsuarioUseCase.ejecutar(usuario);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable ->
+                        throwable instanceof NegocioException &&
+                                throwable.getMessage().equals(ROL_NO_EXISTE)
                 )
                 .verify();
     }

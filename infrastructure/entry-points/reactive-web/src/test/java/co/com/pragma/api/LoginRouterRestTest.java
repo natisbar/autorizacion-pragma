@@ -1,16 +1,16 @@
 package co.com.pragma.api;
 
-import co.com.pragma.api.dto.UsuarioSolicitudDto;
+import co.com.pragma.api.dto.LoginSolicitudDto;
 import co.com.pragma.api.exception.ManejadorGlobalErrores;
-import co.com.pragma.api.handler.UsuarioHandler;
+import co.com.pragma.api.handler.LoginHandler;
 import co.com.pragma.api.mapper.UsuarioMapper;
-import co.com.pragma.api.router.UsuarioRouterRest;
+import co.com.pragma.api.router.LoginRouterRest;
 import co.com.pragma.api.seguridad.PasswordService;
 import co.com.pragma.api.seguridad.TestSecurityConfig;
 import co.com.pragma.api.seguridad.config.SecurityHeadersConfig;
+import co.com.pragma.api.seguridad.jwt.JwtService;
 import co.com.pragma.api.validador.ValidacionManejador;
 import co.com.pragma.model.usuario.Usuario;
-import co.com.pragma.usecase.crearusuario.CrearUsuarioUseCase;
 import co.com.pragma.usecase.crearusuario.ObtenerUsuarioUseCase;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -19,43 +19,41 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static co.com.pragma.api.handler.LoginHandler.AUTENTICACION_FALLIDA;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {UsuarioRouterRest.class, UsuarioHandler.class, ValidacionManejador.class, Validator.class,
-        CrearUsuarioUseCase.class, UsuarioMapper.class, ManejadorGlobalErrores.class, SecurityHeadersConfig.class,
-        PasswordService.class})
+@ContextConfiguration(classes = {LoginRouterRest.class, LoginHandler.class, ValidacionManejador.class, Validator.class,
+        ObtenerUsuarioUseCase.class, UsuarioMapper.class, ManejadorGlobalErrores.class, SecurityHeadersConfig.class,
+        PasswordService.class, JwtService.class})
 @WebFluxTest
 @Import(TestSecurityConfig.class)
-class UsuarioRouterRestTest {
+@TestPropertySource(properties = {
+        "security.jwt.secretkey=MiClaveSuperSecretaDePrueba123456789012345",
+        "security.jwt.expiration=3600000"
+})
+class LoginRouterRestTest {
 
     @Autowired
     private WebTestClient webTestClient;
-
-    @MockitoBean
-    private CrearUsuarioUseCase crearUsuarioUseCase;
 
     @MockitoBean
     private ObtenerUsuarioUseCase obtenerUsuarioUseCase;
 
     @Test
     void testListenPOSTUseCase_error400() {
-        UsuarioSolicitudDto dto = new UsuarioSolicitudDto("natalia", "barbosa",
-                "1993-05-12", "11223344", null, null,
-                "correo@correo.com", "-1", "CLIENTE", "AS12as$qwqw");
+        LoginSolicitudDto dto = new LoginSolicitudDto("correo@correo.com", "Asssssa");
 
         webTestClient.post()
-                .uri("/v1/usuarios")
+                .uri("/v1/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
@@ -67,19 +65,18 @@ class UsuarioRouterRestTest {
                     System.out.println("Respuesta: " + response);
                 })
                 .jsonPath("$.estado").isEqualTo(400)
-                .jsonPath("$.mensaje").isEqualTo("salarioBase: El salario base debe ser un valor numerico entre 0 y 15000000");
+                .jsonPath("$.mensaje").isEqualTo("contrasena: La contraseña debe contener al " +
+                        "menos un dígito, una minuscula, una mayuscula, un caracter especial (@$!%*?&) y una longitud mínima 8 y máxima 20 caracteres");
     }
 
     @Test
     void testListenPOSTUseCase_error500() {
-        UsuarioSolicitudDto dto = new UsuarioSolicitudDto("natalia", "barbosa",
-                "1993-05-12", "11223344", null, null,
-                "correo@correo.com", "5000000", "CLIENTE", "AS12as$qwqw");
+        LoginSolicitudDto dto = new LoginSolicitudDto("correo@correo.com", "Asssssa123$");
 
-        when(crearUsuarioUseCase.ejecutar(any(Usuario.class))).thenReturn(Mono.error(new RuntimeException("error")));
+        when(obtenerUsuarioUseCase.obtenerPorCorreo(anyString())).thenReturn(Mono.error(new RuntimeException("error")));
 
         webTestClient.post()
-                .uri("/v1/usuarios")
+                .uri("/v1/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
@@ -103,10 +100,8 @@ class UsuarioRouterRestTest {
     }
 
     @Test
-    void testListenPOSTUseCase_error200() {
-        UsuarioSolicitudDto dto = new UsuarioSolicitudDto("natalia", "barbosa",
-                "1993-05-12", "11223344", null, null,
-                "correo@correo.com", "5000000", "CLIENTE", "AS12as$qwqw");
+    void testListenPOSTUseCase_error400_contrasenaNoCoincide() {
+        LoginSolicitudDto dto = new LoginSolicitudDto("correo@correo.com", "Asssssa123$");
 
         Usuario usuario = Usuario.builder()
                 .nombres("natalia")
@@ -116,38 +111,27 @@ class UsuarioRouterRestTest {
                 .salarioBase(BigDecimal.valueOf(2000000))
                 .build();
 
-        when(crearUsuarioUseCase.ejecutar(any(Usuario.class))).thenReturn(Mono.just(usuario));
+        when(obtenerUsuarioUseCase.obtenerPorCorreo(anyString())).thenReturn(Mono.just(usuario));
 
         webTestClient.post()
-                .uri("/v1/usuarios")
+                .uri("/v1/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
-                .expectStatus().isCreated()
-                .expectBody();
-    }
-
-    @Test
-    void testListenPOSTObtenerUseCase_error400() {
-        List<String> correos = List.of("correo_invalido");
-
-        webTestClient.post()
-                .uri("/v1/usuarios/por-correos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(correos)
-                .exchange()
                 .expectStatus().is4xxClientError()
                 .expectBody()
+                .consumeWith(result -> {
+                    String response = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+                    System.out.println("Respuesta: " + response);
+                })
                 .jsonPath("$.estado").isEqualTo(400)
-                .jsonPath("$.mensaje").value(mensaje ->
-                        assertTrue(mensaje.toString().contains("Formato de correo inválido")));
+                .jsonPath("$.mensaje").isEqualTo(AUTENTICACION_FALLIDA);
     }
 
     @Test
-    void testListenPOSTObtenerUseCase_success201() {
-        List<String> correos = List.of("correo@correo.com");
+    void testListenPOSTUseCase_todoOk() {
+        LoginSolicitudDto dto = new LoginSolicitudDto("correo@correo.com", "Asssssa123$");
 
         Usuario usuario = Usuario.builder()
                 .nombres("natalia")
@@ -155,19 +139,18 @@ class UsuarioRouterRestTest {
                 .correoElectronico("correo@correo.com")
                 .identificacion("11223344")
                 .salarioBase(BigDecimal.valueOf(2000000))
+                .contrasena("$2a$12$Y1JV0a018AS.4R2B5t45Z.eIXoyC9BdSsQVyXEIyIhkQEMZTyIOda")
                 .build();
 
-        when(obtenerUsuarioUseCase.obtenerTodoPorCorreos(correos)).thenReturn(Flux.just(usuario));
+        when(obtenerUsuarioUseCase.obtenerPorCorreo(anyString())).thenReturn(Mono.just(usuario));
 
         webTestClient.post()
-                .uri("/v1/usuarios/por-correos")
+                .uri("/v1/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(correos)
+                .bodyValue(dto)
                 .exchange()
-                .expectStatus().isCreated()
-                .expectBody()
-                .jsonPath("$[0].correoElectronico").isEqualTo("correo@correo.com")
-                .jsonPath("$[0].nombres").isEqualTo("natalia");
+                .expectStatus().isOk()
+                .expectBody();
     }
 }
