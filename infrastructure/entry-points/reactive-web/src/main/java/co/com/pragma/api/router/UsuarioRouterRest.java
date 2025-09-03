@@ -148,14 +148,14 @@ public class UsuarioRouterRest {
                                                     examples = {
                                                             @ExampleObject(
                                                                     name = "Usuario creado",
-                                                                    value = "[ \"nombres\": \"Laura\", " +
+                                                                    value = "[ {\"nombres\": \"Laura\", " +
                                                                             "\"apellidos\": \"Martinez\", " +
                                                                             "\"fechaNacimiento\": \"1990-05-04\", " +
                                                                             "\"identificacion\": \"10072884\", " +
                                                                             "\"direccion\": \"cll 6 sur\", " +
                                                                             "\"telefono\": \"1111111111\", " +
                                                                             "\"correoElectronico\": \"laura.martinez3@gmail.com\", " +
-                                                                            "\"salarioBase\": \"2000000\" ]"
+                                                                            "\"salarioBase\": \"2000000\"} ]"
                                                             )
                                                     }
                                             )
