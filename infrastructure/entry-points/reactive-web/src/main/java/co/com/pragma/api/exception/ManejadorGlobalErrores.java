@@ -34,6 +34,7 @@ public class ManejadorGlobalErrores extends AbstractErrorWebExceptionHandler {
         super.setMessageWriters(serverCodecConfigurer.getWriters());
         httpStatusCodes.put(NegocioException.class, HttpStatus.BAD_REQUEST);
         httpStatusCodes.put(ConflictoException.class, HttpStatus.CONFLICT);
+        httpStatusCodes.put(NoAutorizadoException.class, HttpStatus.UNAUTHORIZED);
     }
 
     private Mono<ServerResponse> construirRespuestaError(ServerRequest request) {
@@ -44,7 +45,8 @@ public class ManejadorGlobalErrores extends AbstractErrorWebExceptionHandler {
 
         if (!(throwable instanceof NegocioException) && !Exceptions.isMultiple(throwable)
                 && !(throwable instanceof WebExchangeBindException)
-                && !(throwable instanceof ConstraintViolationException)) {
+                && !(throwable instanceof ConstraintViolationException)
+        ) {
             responseCode = throwable instanceof ResponseStatusException responseStatusException ?
                     HttpStatus.valueOf(responseStatusException.getStatusCode().value()) :
                     HttpStatus.INTERNAL_SERVER_ERROR;

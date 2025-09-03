@@ -1,6 +1,7 @@
 package co.com.pragma.api.router;
 
-import co.com.pragma.api.dto.UsuarioSolicitudDto;
+import co.com.pragma.api.dto.LoginRespuestaDto;
+import co.com.pragma.api.dto.LoginSolicitudDto;
 import co.com.pragma.api.exception.Error;
 import co.com.pragma.api.handler.LoginHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -23,69 +26,71 @@ public class LoginRouterRest {
 
     @Bean
     @RouterOperation(
+            path = "/v1/login",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            method = RequestMethod.POST,
+            beanClass = LoginHandler.class,
+            beanMethod = "listenPOSTUseCase",
             operation = @Operation(
-                    operationId = "crearUsuario",
-                    summary = "Crear un nuevo usuario",
-                    description = "Este endpoint permite registrar un usuario en el sistema. "
-                            + "Requiere que la identificación y el correo electrónico sean únicos. "
-                            + "El salario base debe estar en el rango de 0 a 15'000.000.",
-                    tags = {"Usuario"},
+                    operationId = "login",
+                    summary = "Autenticar usuario",
+                    description = "Este endpoint permite autenticar un usuario en el sistema. "
+                            + "Si las credenciales son válidas, devuelve un token JWT que debe usarse "
+                            + "en las siguientes solicitudes en el encabezado **Authorization: Bearer {token}**.",
+                    tags = {"Autenticación"},
                     requestBody = @RequestBody(
                             required = true,
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = UsuarioSolicitudDto.class)
+                                    schema = @Schema(implementation = LoginSolicitudDto.class),
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "Ejemplo de login",
+                                                    value = "{ \"correoElectronico\": \"laura.velasquez@gmail.com\", "
+                                                            + "\"contrasena\": \"Password1$\" }"
+                                            )
+                                    }
                             )
                     ),
                     responses = {
                             @ApiResponse(
-                                    responseCode = "201",
-                                    description = "Usuario creado exitosamente",
+                                    responseCode = "200",
+                                    description = "Autenticación exitosa",
                                     content = @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = UsuarioSolicitudDto.class),
+                                            schema = @Schema(implementation = LoginRespuestaDto.class),
                                             examples = {
                                                     @ExampleObject(
-                                                            name = "Usuario creado",
-                                                            value = "{ \"nombres\": \"Laura\", " +
-                                                                    "\"apellidos\": \"Martinez\", " +
-                                                                    "\"fechaNacimiento\": \"1990-05-04\", " +
-                                                                    "\"identificacion\": \"10072884\", " +
-                                                                    "\"direccion\": \"cll 6 sur\", " +
-                                                                    "\"telefono\": \"1111111111\", " +
-                                                                    "\"correoElectronico\": \"laura.martinez3@gmail.com\", " +
-                                                                    "\"salarioBase\": \"2000000\" }"
+                                                            name = "Token de acceso",
+                                                            value = "{ \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\" }"
                                                     )
                                             }
-
                                     )
                             ),
                             @ApiResponse(
                                     responseCode = "400",
-                                    description = "Datos inválidos en la solicitud",
+                                    description = "Solicitud inválida: datos mal formados",
                                     content = @Content(
                                             mediaType = "application/json",
                                             schema = @Schema(implementation = Error.class),
                                             examples = {
                                                     @ExampleObject(
-                                                            name = "Datos inválidos",
-                                                            value = "{ \"codigo\": \"400\", \"mensaje\": \"Los nombres son obligatorios y no pueden estar vacios, " +
-                                                                    "El teléfono solo puede contener valores numericos y no puede tener mas de 10 digitos\" }"
+                                                            name = "Error de validación",
+                                                            value = "{ \"codigo\": \"400\", \"mensaje\": \"El correo electronico es obligatorio y no puede estar vacio\" }"
                                                     )
                                             }
-
                                     )
                             ),
                             @ApiResponse(
-                                    responseCode = "409",
-                                    description = "Conflicto: el correo o la identificación ya están registrados",
+                                    responseCode = "401",
+                                    description = "Credenciales inválidas",
                                     content = @Content(
                                             mediaType = "application/json",
                                             schema = @Schema(implementation = Error.class),
                                             examples = {
                                                     @ExampleObject(
-                                                            name = "Usuario ya existe",
-                                                            value = "{ \"codigo\": \"409\", \"mensaje\": \"El correo electrónico proporcionado ya está en uso\" }"
+                                                            name = "Login fallido",
+                                                            value = "{ \"codigo\": \"401\", \"mensaje\": \"Autenticación fallida, usuario o contraseña incorrectos\" }"
                                                     )
                                             }
                                     )
@@ -97,3 +102,4 @@ public class LoginRouterRest {
         return route(POST("/v1/login"), loginHandler::listenPOSTUseCase);
     }
 }
+

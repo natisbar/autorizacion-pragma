@@ -8,7 +8,7 @@ import static co.com.pragma.api.common.Constantes.PATRON_CONTRASENA;
 import static co.com.pragma.api.common.Constantes.PATRON_CORREO;
 
 @Schema(
-        name = "UsuarioDto",
+        name = "LoginSolicitudDto",
         requiredProperties = {"correoElectronico", "contrasena"}
 )
 public record LoginSolicitudDto(
