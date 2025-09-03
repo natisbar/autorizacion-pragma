@@ -165,7 +165,7 @@ class UsuarioRouterRestTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(correos)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$[0].correoElectronico").isEqualTo("correo@correo.com")
                 .jsonPath("$[0].nombres").isEqualTo("natalia");

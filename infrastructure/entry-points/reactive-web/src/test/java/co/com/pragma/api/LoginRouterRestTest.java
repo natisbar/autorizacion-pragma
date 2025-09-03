@@ -125,7 +125,7 @@ class LoginRouterRestTest {
                     String response = new String(result.getResponseBody(), StandardCharsets.UTF_8);
                     System.out.println("Respuesta: " + response);
                 })
-                .jsonPath("$.estado").isEqualTo(400)
+                .jsonPath("$.estado").isEqualTo(401)
                 .jsonPath("$.mensaje").isEqualTo(AUTENTICACION_FALLIDA);
     }
 

@@ -52,6 +52,6 @@ public class UsuarioHandler {
                 .flatMapMany(obtenerUsuarioUseCase::obtenerTodoPorCorreos)
                 .map(usuarioMapper::convertirA)
                 .collectList()
-                .flatMap(dto -> ServerResponse.status(HttpStatus.CREATED).bodyValue(dto));
+                .flatMap(dto -> ServerResponse.status(HttpStatus.OK).bodyValue(dto));
     }
 }
