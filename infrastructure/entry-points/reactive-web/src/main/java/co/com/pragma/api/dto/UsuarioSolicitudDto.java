@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import static co.com.pragma.api.common.Constantes.*;
 
 @Schema(
-        name = "UsuarioDto",
+        name = "UsuarioSolicitudDto",
         requiredProperties = {"nombres", "apellidos", "identificacion", "correoElectronico", "salarioBase"}
 )
 public record UsuarioSolicitudDto(
