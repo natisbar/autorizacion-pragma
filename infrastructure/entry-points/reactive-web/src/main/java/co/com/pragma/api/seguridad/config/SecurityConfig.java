@@ -25,7 +25,7 @@ public class SecurityConfig {
                         .pathMatchers("/webjars/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/login").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/usuarios").hasAnyRole("ADMIN", "ASESOR")
-                        .pathMatchers(HttpMethod.POST, "/v1/usuarios/por-correos").hasRole("ASESOR")
+                        .pathMatchers(HttpMethod.POST, "/v1/usuarios/por-correos").hasAnyRole("ASESOR", "ADMIN")
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
