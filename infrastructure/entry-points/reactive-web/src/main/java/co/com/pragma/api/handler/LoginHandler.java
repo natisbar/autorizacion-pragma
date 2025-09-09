@@ -39,6 +39,7 @@ public class LoginHandler {
                                                     return Mono.just(new LoginRespuestaDto(
                                                             jwtService.generarToken(
                                                                     usuario.getId(),
+                                                                    usuario.getSalarioBase(),
                                                                     usuario.getCorreoElectronico(),
                                                                     usuario.getNombreRol()
                                                             )

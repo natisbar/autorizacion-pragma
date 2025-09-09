@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Service
@@ -17,10 +18,11 @@ public class JwtService {
     @Value("${security.jwt.expiration}")
     private long expirationMs;
 
-    public String generarToken(Long idUsuario, String email, String rol) {
+    public String generarToken(Long idUsuario, BigDecimal salarioBase, String email, String rol) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("id", idUsuario)
+                .claim("salarioBase", salarioBase)
                 .claim("rol", rol)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
