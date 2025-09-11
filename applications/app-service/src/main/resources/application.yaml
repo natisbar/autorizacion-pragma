@@ -15,16 +15,16 @@ spring:
     include: null
 adapters:
   r2dbc:
-    host: "localhost"
-    port: 5432
-    database: "pragma"
-    schema: "public"
-    username: "postgres"
-    password: 1234
+    host: ${R2DBC_HOST_AUTH:localhost}
+    port: ${R2DBC_PORT_AUTH:5432}
+    database: ${R2DBC_DATABASE_AUTH:pragma}
+    schema: ${R2DBC_SCHEMA_AUTH:public}
+    username: ${R2DBC_USERNAME_AUTH:postgres}
+    password: ${R2DBC_PASSWORD_AUTH:1234}
 security:
   jwt:
-    secretkey: "Bardelhaus1234567890Bardelhaus1234567890$"
-    expiration: 3600000
+    secretkey: ${JWT_SECRET_KEY:Bardelhaus1234567890Bardelhaus1234567890$}
+    expiration: ${JWT_SECRET_KEY_EXPIRATION:3600000}
 management:
   endpoints:
     web:
