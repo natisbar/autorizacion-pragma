@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .pathMatchers("/v3/api-docs/**").permitAll()
                         .pathMatchers("/swagger-resources/**").permitAll()
                         .pathMatchers("/webjars/**").permitAll()
+                        .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/login").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/usuarios").hasAnyRole("ADMIN", "ASESOR")
                         .pathMatchers(HttpMethod.POST, "/v1/usuarios/por-correos").hasAnyRole("ASESOR", "ADMIN")
